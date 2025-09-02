@@ -4,6 +4,13 @@
 
     //echo password_hash("epse",PASSWORD_ARGON2I);
 
+    //vérifier si session
+
+    if(isset($_SESSION['id'])){
+        header("LOCATION:dashboard.php");
+        exit();
+    }
+
     //vérifier s'il y a un cookie
 
     if(isset($_COOKIE['remember_me']) && isset($_COOKIE['myid'])){
@@ -12,6 +19,7 @@
             $access = $bdd->prepare("SELECT id, login, password, connexion FROM members WHERE id=?");
             $access->execute([$_COOKIE['myid']]);
             $donAccess=$access->fetch(PDO::FETCH_ASSOC);
+            $access->closeCursor();
 
             if($donAccess){
                 //id ok
@@ -20,14 +28,16 @@
                     $_SESSION['id'] = $donAccess['id'];
                     $_SESSION['login'] = $donAccess['login'];
                     header("LOCATION:dashboard.php");
+                }else{
+                    header("LOCATION:index.php");
                 }
             }else{
                 //id pas ok
-                header("LOCATION:403.php");
+                header("LOCATION:403.php?id");
                 exit();
             }
         }else{
-            header("LOCATION:403.php");
+            header("LOCATION:403.php?num");
             exit();
         }
     }
