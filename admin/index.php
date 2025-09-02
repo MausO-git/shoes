@@ -4,6 +4,34 @@
 
     //echo password_hash("epse",PASSWORD_ARGON2I);
 
+    //vérifier s'il y a un cookie
+
+    if(isset($_COOKIE['remember_me']) && isset($_COOKIE['myid'])){
+        if(is_numeric($_COOKIE['myid'])){
+            //verif si id est un utilisateur
+            $access = $bdd->prepare("SELECT id, login, password, connexion FROM members WHERE id=?");
+            $access->execute([$_COOKIE['myid']]);
+            $donAccess=$access->fetch(PDO::FETCH_ASSOC);
+
+            if($donAccess){
+                //id ok
+                if(password_verify($_COOKIE['remember_me'], $donAccess['connexion'])){
+                    //création session
+                    $_SESSION['id'] = $donAccess['id'];
+                    $_SESSION['login'] = $donAccess['login'];
+                    header("LOCATION:dashboard.php");
+                }
+            }else{
+                //id pas ok
+                header("LOCATION:403.php");
+                exit();
+            }
+        }else{
+            header("LOCATION:403.php");
+            exit();
+        }
+    }
+
     // si formulaire envoyé
     if(isset($_POST['login']) && isset($_POST['password']))
     {
@@ -26,6 +54,24 @@
                 {
                     $_SESSION['id']=$don['id'];
                     $_SESSION['login']=$don['login'];
+
+                    //rester connecté
+                    if(isset($_POST['remember'])){
+                        $token = bin2hex(random_bytes(32));
+                        $hashtoken = password_hash($token, PASSWORD_DEFAULT);
+
+                        setcookie('myid', $don['id'], time() + 3600 * 24 * 30, "", "", false, true);
+                        setcookie('remember_me', $hashtoken, time() + 3600 * 24 * 30, "", "", false, true);
+
+                        $update = $bdd->prepare("UPDATE members SET connexion=:connex WHERE id=:myid");
+                        $update->execute([
+                            ":connex" => $hashtoken,
+                            ":myid" => $don['id']
+                        ]);
+
+                    }
+
+
                     header("LOCATION:dashboard.php");
                     exit();
                 }else{
@@ -71,6 +117,11 @@
                     <div class="form-group my-2">
                         <label for="password">Password</label>
                         <input type="password" name="password" id="password" class="form-control">
+                    </div>
+                    <div class="form-group my-2">
+                        <!-- contrairement aux autres input, les checkbox doivent être cochées pour transmettre des informations -->
+                        <input type="checkbox" name="remember" id="remember" value="ok">
+                        <label for="remember">Rester connecté</label>
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Connexion" class="btn btn-success">

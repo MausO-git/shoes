@@ -7,9 +7,9 @@
     }
 
     if(isset($_GET['deco'])){
-        if($_GET['deco'] === 'ok'){
-            session_destroy();
-        }
+        session_destroy();
+        header("LOCATION:index.php");
+        exit();
     }
 
 ?>
@@ -27,7 +27,11 @@
     <?php
         include("partials/header.php");
     ?>
-    <h1>Dashboard</h1>
+
+    <div class="container-fluid">
+        <h1>Dashboard</h1>
+    </div>
+
     <?php
         include("partials/footer.php");
     ?>
