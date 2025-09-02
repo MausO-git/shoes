@@ -28,8 +28,10 @@
                     $_SESSION['id'] = $donAccess['id'];
                     $_SESSION['login'] = $donAccess['login'];
                     header("LOCATION:dashboard.php");
+                    exit();
                 }else{
                     header("LOCATION:index.php");
+                    exit();
                 }
             }else{
                 //id pas ok
@@ -71,7 +73,7 @@
                         $hashtoken = password_hash($token, PASSWORD_DEFAULT);
 
                         setcookie('myid', $don['id'], time() + 3600 * 24 * 30, "", "", false, true);
-                        setcookie('remember_me', $hashtoken, time() + 3600 * 24 * 30, "", "", false, true);
+                        setcookie('remember_me', $token, time() + 3600 * 24 * 30, "", "", false, true);
 
                         $update = $bdd->prepare("UPDATE members SET connexion=:connex WHERE id=:myid");
                         $update->execute([
