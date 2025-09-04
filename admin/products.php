@@ -8,21 +8,6 @@
     require "../connexion.php";
     if(isset($_GET['delete']) && is_numeric($_GET['delete'])){
         $id = htmlspecialchars($_GET['delete']);
-
-        $verif = $bdd->prepare("SELECT * FROM marque WHERE id=?");
-        $verif->execute([$id]);
-        $donVerif = $verif->fetch(PDO::FETCH_ASSOC);
-        $verif->closeCursor();
-        if(!$donVerif){
-            header("LOCATION:marques.php");
-            exit();
-        }
-
-        //supprmier
-        $delete = $bdd->prepare("DELETE FROM marque WHERE id=?");
-        $delete->execute([$id]);
-        header("LOCATION:marques.php?successDel=".$id);
-        exit();
     }
 
 ?>
@@ -34,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <title>Document</title>
+    <title>Administration - produits</title>
 </head>
 <body>
     <?php
@@ -42,41 +27,45 @@
     ?>
 
     <div class="container-fluid">
-        <h1>Gestion des marques</h1>
-        <a href="addMarque.php" class="btn btn-success my-3">Ajouter une marque</a>
+        <h1>Gestion des produits</h1>
+        <a href="addProduct.php" class="btn btn-success my-3">Ajouter un produit</a>
         <?php
             if(isset($_GET['add'])){
                 if($_GET['add'] == "success"){
-                    echo "<div class='alert alert-success'>Vous avez bien ajouté une nouvelle marque à la base de données</div>";
+                    echo "<div class='alert alert-success'>Vous avez bien ajouté un nouveau produit à la base de données</div>";
                 }
             }
 
             if(isset($_GET['successDel'])){
-                echo "<div class='alert alert-warning'>Vous avez bien supprmier la marque n°".$_GET['successDel']." de la base de données</div>";
+                echo "<div class='alert alert-warning'>Vous avez bien supprmier le produit n°".$_GET['successDel']." de la base de données</div>";
             }
 
             if(isset($_GET['update'])){
-                echo "<div class='alert alert-warning'>Vous avez bien modifié la marque n°".$_GET['update']."</div>";
+                echo "<div class='alert alert-warning'>Vous avez bien modifié le produit n°".$_GET['update']."</div>";
             }
         ?>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>id</th>
+                    <th>Marque</th>
                     <th>nom</th>
+                    <th>Prix</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                    $req = $bdd->query("SELECT * FROM marque ORDER BY id DESC");
+                    $req = $bdd->query("SELECT products.id AS pid, products.nom AS pnom, marque.nom AS mnom, products.prix AS prix FROM products INNER JOIN marque ON products.marque = marque.id");
                     while($don = $req->fetch(PDO::FETCH_ASSOC)){
                         echo "<tr>";
-                            echo "<td>".$don['id']."</td>";
-                            echo "<td>".$don['nom']."</td>";
+                            echo "<td>".$don['pid']."</td>";
+                            echo "<td>".$don['mnom']."</td>";
+                            echo "<td>".$don['pnom']."</td>";
+                            echo "<td>".$don['prix']."</td>";
                             echo "<td>";
-                                echo "<a href='updateMarque.php?id=".$don['id']."' class='btn btn-warning'>Modifier</a>";
-                                echo "<a href='marques.php?delete=".$don['id']."' class='btn btn-danger mx-2'>Supprimer</a>";
+                                echo "<a href='updateProduct.php?id=".$don['pid']."' class='btn btn-warning'>Modifier</a>";
+                                echo "<a href='products.php?delete=".$don['pid']."' class='btn btn-danger mx-2'>Supprimer</a>";
                             echo "</td>";
                         echo "</tr>";
                     }

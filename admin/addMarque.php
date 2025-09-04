@@ -24,7 +24,7 @@
 
     <div class="container-fluid">
         <h1>Ajouter des marques</h1>
-        <a href="marques.php" class="btn btn-success my-3">Retour</a>
+        <a href="marques.php" class="btn btn-secondary my-3">Retour</a>
         <?php
             if(isset($_GET['error'])){
                 echo "<div class='alert alert-danger'>Une erreur est survenue (code erreur: ".$_GET['error'].")</div>";
