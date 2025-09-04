@@ -6,6 +6,21 @@
         exit();
     }
     require "../connexion.php";
+
+    if(isset($_GET['id']) && is_numeric($_GET['id'])){
+        $id = htmlspecialchars($_GET['id']);
+        $req = $bdd->prepare("SELECT * FROM products WHERE id=?");
+        $req->execute([$id]);
+        $donProd = $req->fetch((PDO::FETCH_ASSOC));
+        $req->closeCursor();
+        if(!$donProd){
+            header("LOCATION:products.php?notdon");
+            exit();
+        }
+    }else{
+        header("LOCATION:products.php?notnum");
+        exit();
+    }
     //vérif de l'envoie du formulaire
     if(isset($_POST['nom'])){
         //verif valeurs
@@ -68,42 +83,58 @@
                     $fichiercplt = rand().$fichier;
 
                     if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier.$fichiercplt)){
-                        //insertion dans bdd
-                        $insert = $bdd->prepare("INSERT INTO products(nom, marque, description, cover, prix ) VALUES(:nom, :marque, :descr, :cover, :prix)");
-                        $insert->execute([
+                        //supprimer images
+                        unlink("../images/".$donProd['cover']);
+                        unlink("../images/mini_".$donProd['cover']);
+                        //update dans bdd
+                        $update = $bdd->prepare("UPDATE products SET nom=:nom, marque=:marque, description=:descr, cover=:img, prix=:prix WHERE id=:id");
+                        $update->execute([
                             ":nom" => $nom,
                             ":marque" => $marque,
                             ":descr" => $descr,
-                            ":cover" => $fichiercplt,
-                            ":prix" => $prix
+                            ":img" => $fichiercplt,
+                            ":prix" => $prix,
+                            ":id" => $id
                         ]);
-
+                        
                         //gestion redim
                         if($extension == ".jpg" || $extension == ".jpeg"){
-                            header("LOCATION:redim.php?image=".$fichiercplt);
+                            header("LOCATION:redim.php?id=".$id."&image=".$fichiercplt);
                             exit();
                         }else{
                             //cas fichier png
-                            header("LOCATION:redimpng.php?image=".$fichiercplt);
+                            header("LOCATION:redimpng.php?id=".$id."&image=".$fichiercplt);
                             exit();
                         }
                     }else{
-                        header("LOCATION:addProduct.php?errorimg=7");
+                        header("LOCATION:updateProduct.php?id=".$id."&errorimg=7");
                     }
                 }else{
-                    header("LOCATION:addProduct.php?errorimg=".$err);
+                    header("LOCATION:updateProduct.php?id=".$id."&errorimg=".$err);
                 }
+            }elseif($_FILES['image']['error'] == 4){
+                //update dans bdd
+                $update = $bdd->prepare("UPDATE products SET nom=:nom, marque=:marque, description=:descr, prix=:prix WHERE id=:id");
+                $update->execute([
+                    ":nom" => $nom,
+                    ":marque" => $marque,
+                    ":descr" => $descr,
+                    ":prix" => $prix,
+                    ":id" => $id
+                ]);
+                header("LOCATION:products.php?update=".$id);
+                exit();
             }else{
-                header("LOCATION:addProduct.php?errorimg=".$_FILES['image']['error']);
+                header("LOCATION:updateProduct.php?id=".$id."&errorimg=".$_FILES['image']['error']);
                 exit();
             }
         }else{
-            header(("LOCATION:addProduct.php?error=".$err));
+            header(("LOCATION:updateProduct.php?id=".$id."&error=".$err));
             exit();
         }
         
     }else{
-        header("LOCATION:products.php");
+        header("LOCATION:products.php?post");
         exit();
     }
 

@@ -18,9 +18,23 @@
             exit();
         }
 
-        //supprmier
+        //supprmier les images des p^roduits associés à la marque
+        $deleteimg = $bdd->prepare("SELECT * FROM products WHERE marque=?");
+        $deleteimg->execute([$id]);
+        while($donDelImg = $deleteimg->fetch(PDO::FETCH_ASSOC)){
+            unlink("../images/".$donDelImg['cover']);
+            unlink("../images/mini_".$donDelImg['cover']);
+        }
+
+        //suppression dans la bdd des produits associés à la marque
+        $deleteProd = $bdd->prepare("DELETE FROM products WHERE marque=?");
+        $deleteProd->execute([$id]);
+
+
+        //suppression dans la bdd de la marque
         $delete = $bdd->prepare("DELETE FROM marque WHERE id=?");
         $delete->execute([$id]);
+        
         header("LOCATION:marques.php?successDel=".$id);
         exit();
     }

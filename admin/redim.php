@@ -7,6 +7,7 @@ if(!isset($_SESSION['id'])){
 
 if(!isset($_GET['image'])){
     header("LOCATION:index.php");
+    exit();
 }
 	
 $source = imagecreatefromjpeg("../images/".$_GET['image']); // La photo est la source
@@ -52,6 +53,13 @@ imagejpeg($destination,$rep_nom,80);
 
 // redirection
 
-header("LOCATION:products.php?add=success");
+if(isset($_GET['id'])){
+    header("LOCATION:products.php?update=".$_GET['id']);
+    exit();
+}else{
+    header("LOCATION:products.php?add=success");
+    exit();
+}
+
 
 ?>

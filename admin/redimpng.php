@@ -56,7 +56,13 @@ imagepng($destination,$rep_nom);
 // redirection
 
 
-header("LOCATION:products.php?add=success");
+if(isset($_GET['id'])){
+    header("LOCATION:products.php?update=".$_GET['id']);
+    exit();
+}else{
+    header("LOCATION:products.php?add=success");
+    exit();
+}
 
 
 
