@@ -31,6 +31,10 @@
                     echo "<div class='alert alert-success'>Vous avez bien ajouté une nouvelle marque à la base de données</div>";
                 }
             }
+
+            if(isset($_GET['update'])){
+                echo "<div class='alert alert-warning'>Vous avez bien modifié la marque n°".$_GET['update']."</div>";
+            }
         ?>
         <table class="table table-striped">
             <thead>
@@ -49,7 +53,7 @@
                             echo "<td>".$don['id']."</td>";
                             echo "<td>".$don['nom']."</td>";
                             echo "<td>";
-                                echo "<a href='#' class='btn btn-warning'>Modifier</a>";
+                                echo "<a href='updateMarque.php?id=".$don['id']."' class='btn btn-warning'>Modifier</a>";
                                 echo "<a href='#' class='btn btn-danger mx-2'>Supprimer</a>";
                             echo "</td>";
                         echo "</tr>";
