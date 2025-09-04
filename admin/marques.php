@@ -5,6 +5,25 @@
         header("LOCATION:index.php");
         exit();
     }
+    require "../connexion.php";
+    if(isset($_GET['delete']) && is_numeric($_GET['delete'])){
+        $id = htmlspecialchars($_GET['delete']);
+
+        $verif = $bdd->prepare("SELECT * FROM marque WHERE id=?");
+        $verif->execute([$id]);
+        $donVerif = $verif->fetch(PDO::FETCH_ASSOC);
+        $verif->closeCursor();
+        if(!$donVerif){
+            header("LOCATION:marques.php");
+            exit();
+        }
+
+        //supprmier
+        $delete = $bdd->prepare("DELETE FROM marque WHERE id=?");
+        $delete->execute([$id]);
+        header("LOCATION:marques.php?successDel=".$id);
+        exit();
+    }
 
 ?>
 
@@ -32,6 +51,10 @@
                 }
             }
 
+            if(isset($_GET['successDel'])){
+                echo "<div class='alert alert-warning'>Vous avez bien supprmier la marque n°".$_GET['successDel']." de la base de données</div>";
+            }
+
             if(isset($_GET['update'])){
                 echo "<div class='alert alert-warning'>Vous avez bien modifié la marque n°".$_GET['update']."</div>";
             }
@@ -46,7 +69,6 @@
             </thead>
             <tbody>
                 <?php
-                    require "../connexion.php";
                     $req = $bdd->query("SELECT * FROM marque ORDER BY id DESC");
                     while($don = $req->fetch(PDO::FETCH_ASSOC)){
                         echo "<tr>";
@@ -54,7 +76,7 @@
                             echo "<td>".$don['nom']."</td>";
                             echo "<td>";
                                 echo "<a href='updateMarque.php?id=".$don['id']."' class='btn btn-warning'>Modifier</a>";
-                                echo "<a href='#' class='btn btn-danger mx-2'>Supprimer</a>";
+                                echo "<a href='marques.php?delete=".$don['id']."' class='btn btn-danger mx-2'>Supprimer</a>";
                             echo "</td>";
                         echo "</tr>";
                     }
