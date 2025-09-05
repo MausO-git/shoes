@@ -17,9 +17,26 @@
             header("LOCATION:products.php");
             exit();
         }
+
+        //suppression des fichiers images de la galerie associer à un produit
+        $delGal = $bdd->prepare("SELECT * FROM images WHERE id_product=?");
+        $delGal->execute([$id]);
+        $donDelGal = $delGal->fetchAll(PDO::FETCH_ASSOC);
+        $delGal->closeCursor();
+        //var_dump($donDelGal);
+        foreach($donDelGal as $del){
+            unlink("../images/".$del['fichier']);
+        }
+
+        //suppression de la galerie dans la bdd
+        $delGalBdd = $bdd->prepare("DELETE FROM images WHERE id_product=?");
+        $delGalBdd->execute([$id]);
+
+        //suppression de la cover du produit
         unlink("../images/".$donV['cover']);
         unlink("../images/mini_".$donV['cover']);
 
+        //suppression du produit dans la bdd
         $delete = $bdd->prepare("DELETE FROM products WHERE id=?");
         $delete->execute([$id]);
         header(("LOCATION:products.php?successDel=".$id));

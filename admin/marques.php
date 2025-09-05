@@ -18,18 +18,28 @@
             exit();
         }
 
-        //supprmier les images des p^roduits associés à la marque
+        
+        //supprmier les images des produits associés à la marque
         $deleteimg = $bdd->prepare("SELECT * FROM products WHERE marque=?");
         $deleteimg->execute([$id]);
         while($donDelImg = $deleteimg->fetch(PDO::FETCH_ASSOC)){
             unlink("../images/".$donDelImg['cover']);
             unlink("../images/mini_".$donDelImg['cover']);
+
+            $imageAssoc = $bdd->prepare("SELECT * FROM images WHERE id_product=?");
+            $imageAssoc->execute([$donDelImg['id']]);
+            $donImgA = $imageAssoc->fetchAll(PDO::FETCH_ASSOC);
+            foreach($donImgA as $imgA){
+                unlink("../images/".$imgA['fichier']);
+            }
+
+            $delImgA = $bdd->prepare("DELETE FROM images WHERE id_product=?");
+            $delImgA->execute([$donDelImg['id']]);
         }
 
         //suppression dans la bdd des produits associés à la marque
         $deleteProd = $bdd->prepare("DELETE FROM products WHERE marque=?");
         $deleteProd->execute([$id]);
-
 
         //suppression dans la bdd de la marque
         $delete = $bdd->prepare("DELETE FROM marque WHERE id=?");
