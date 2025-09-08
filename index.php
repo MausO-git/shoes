@@ -7,7 +7,7 @@
             "all" => "all.php",
             "modele" => "modele.php"
         ];
-        //SELECT p.id AS pid, p.nom AS pnom, p.cover AS cover, p.description AS descr, p.prix AS prix, m.nom AS nMarque, i.fichier AS galImg FROM products p INNER JOIN marque m ON p.marque = m.id INNER JOIN images i ON p.id = i.id_product WHERE pid=?
+        
         if(isset($_GET['action'])){
             if(array_key_exists($_GET['action'], $tabMenu)){
                 $menu = $tabMenu[$_GET['action']];
@@ -27,6 +27,22 @@
                         header("LOCATION:404.php");
                         exit;
                     }
+                }elseif($_GET['action'] == "all"){
+                    //pagination
+                    $reqCount = $bdd->query("SELECT * FROM products");
+                    $count = $reqCount->rowCount();
+                    //la limite
+                    $limit = 3;
+                    $nbPage = ceil($count/$limit);
+
+                    if(isset($_GET['page']) && is_numeric($_GET['page'])){
+                        $pg = htmlspecialchars($_GET['page']);
+                    }else{
+                        //pas eu de pagination
+                        $pg = 1;
+                    }
+
+                    $offset = ($pg - 1) * $limit;
                 }else{
                     $menu = $tabMenu[$_GET['action']];
                 }
@@ -43,7 +59,7 @@
     <?php include("partials/head.php") ?>
 <body>
     <?php include("partials/header.php") ?>
-    <h1>Shoes</h1>
+    <h1 class="m-4">Shoes</h1>
     <?php include("pages/".$menu) ?>
     <?php include("partials/footer.php") ?>
 </body>

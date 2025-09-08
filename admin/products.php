@@ -7,6 +7,22 @@
     }
     require "../connexion.php";
 
+    //pagination
+    $reqCount = $bdd->query("SELECT * FROM products");
+    $count = $reqCount->rowCount();
+    //la limite
+    $limit = 5;
+    $nbPage = ceil($count/$limit);
+
+    if(isset($_GET['page']) && is_numeric($_GET['page'])){
+        $pg = htmlspecialchars($_GET['page']);
+    }else{
+        //pas eu de pagination
+        $pg = 1;
+    }
+
+    $offset = ($pg - 1) * $limit;
+
     if(isset($_GET['delete']) && is_numeric($_GET['delete'])){
         $id = htmlspecialchars($_GET['delete']);
         $verif = $bdd->prepare("SELECT * FROM products WHERE id=?");
@@ -89,7 +105,10 @@
             </thead>
             <tbody>
                 <?php
-                    $req = $bdd->query("SELECT products.id AS pid, products.nom AS pnom, marque.nom AS mnom, products.prix AS prix FROM products INNER JOIN marque ON products.marque = marque.id");
+                    $req = $bdd->prepare("SELECT products.id AS pid, products.nom AS pnom, marque.nom AS mnom, products.prix AS prix FROM products INNER JOIN marque ON products.marque = marque.id ORDER BY products.id DESC LIMIT :offset,:limit");
+                    $req->bindValue(":offset", $offset, PDO::PARAM_INT);
+                    $req->bindValue(":limit", $limit, PDO::PARAM_INT);
+                    $req->execute();
                     while($don = $req->fetch(PDO::FETCH_ASSOC)){
                         echo "<tr>";
                             echo "<td>".$don['pid']."</td>";
@@ -107,6 +126,22 @@
             </tbody>
         </table>
     </div>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <?php
+                if($pg>1){
+                    echo "<li class='page-item'><a href='products.php?page=".($pg - 1)."' class='page-link'>Previous</a></li>";
+                }
+                for($cpt=1; $cpt <= $nbPage; $cpt++){
+                    echo "<li class='page-item'><a href='products.php?page=".$cpt."' class='page-link'>".$cpt."</a></li>";
+                }
+                if($pg!=$nbPage){
+                    echo "<li class='page-item'><a href='products.php?page=".($pg + 1)."' class='page-link'>Next</a></li>";
+                }
+            ?>
+        </ul>
+    </nav>
 
     <?php
         include("partials/footer.php");
