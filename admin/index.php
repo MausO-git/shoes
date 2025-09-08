@@ -4,47 +4,57 @@
 
     //echo password_hash("epse",PASSWORD_ARGON2I);
 
-    //vérifier si session
+    // si formulaire envoyé
 
-    if(isset($_SESSION['id'])){
+    //var_dump($_POST);
+
+    //var_dump($_COOKIE);
+
+    // vérifier si SESSION
+    if(isset($_SESSION['id']))
+    {
         header("LOCATION:dashboard.php");
         exit();
     }
 
-    //vérifier s'il y a un cookie
-
-    if(isset($_COOKIE['remember_me']) && isset($_COOKIE['myid'])){
-        if(is_numeric($_COOKIE['myid'])){
-            //verif si id est un utilisateur
+    // vérifier s'il y a un cookie
+    if(isset($_COOKIE['remember_me']) && isset($_COOKIE['myid']))
+    {
+        if(is_numeric($_COOKIE['myid']))
+        {
+            // vérifier si l'id est un utilisateur
             $access = $bdd->prepare("SELECT id, login, password, connexion FROM members WHERE id=?");
             $access->execute([$_COOKIE['myid']]);
             $donAccess=$access->fetch(PDO::FETCH_ASSOC);
             $access->closeCursor();
-
-            if($donAccess){
-                //id ok
-                if(password_verify($_COOKIE['remember_me'], $donAccess['connexion'])){
-                    //création session
+            if($donAccess)
+            {
+                // ok pour l'id
+                // vérifier token
+                if(password_verify($_COOKIE['remember_me'],$donAccess['connexion']))
+                {
+                    //création des sessions
                     $_SESSION['id'] = $donAccess['id'];
                     $_SESSION['login'] = $donAccess['login'];
                     header("LOCATION:dashboard.php");
                     exit();
                 }else{
-                    header("LOCATION:index.php");
-                    exit();
+                    // ⚠️ Token invalide → suppression des cookies
+                setcookie("remember_me", "", time() - 3600, "/", "", false, true);
+                setcookie("myid", "", time() - 3600, "/", "", false, true);
+                $error = "Votre session a expiré, veuillez vous reconnecter.";
                 }
             }else{
-                //id pas ok
-                header("LOCATION:403.php?id");
+                // pas ok pour l'id
+                header("LOCATION:index.php?id");
                 exit();
-            }
+            }  
         }else{
-            header("LOCATION:403.php?num");
+            header("LOCATION:index.php?numeric");
             exit();
         }
     }
-
-    // si formulaire envoyé
+    
     if(isset($_POST['login']) && isset($_POST['password']))
     {
         // vérif le formulaire
@@ -67,23 +77,19 @@
                     $_SESSION['id']=$don['id'];
                     $_SESSION['login']=$don['login'];
 
-                    //rester connecté
-                    if(isset($_POST['remember'])){
+                    // gestion de "rester connecté"
+                    if(isset($_POST['remember']))
+                    {
                         $token = bin2hex(random_bytes(32));
-                        $hashtoken = password_hash($token, PASSWORD_DEFAULT);
-
-                        setcookie('myid', $don['id'], time() + 3600 * 24 * 30, "", "", false, true);
-                        setcookie('remember_me', $token, time() + 3600 * 24 * 30, "", "", false, true);
-
+                        $hashtoken = password_hash($token,PASSWORD_DEFAULT);
+                        setcookie('myid',$don['id'], time()+365*24*3600,"","",false,true);
+                        setcookie('remember_me',$token, time() + 365*24*3600, "", "", false, true);
                         $update = $bdd->prepare("UPDATE members SET connexion=:connex WHERE id=:myid");
                         $update->execute([
                             ":connex" => $hashtoken,
-                            ":myid" => $don['id']
+                            ":myid" => $don['id'],
                         ]);
-
                     }
-
-
                     header("LOCATION:dashboard.php");
                     exit();
                 }else{
