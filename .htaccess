@@ -1,0 +1,10 @@
+Options +FollowSymlinks
+RewriteEngine On
+#pour les alias
+RewriteBase /PHPOscar2/web2-shoes-main/
+#RewriteBase /PHPJordan/shoes/
+
+RewriteRule ^modele-([0-9]+)$ index.php?action=modele&id=$1 [L]
+RewriteRule ^all-page-([0-9]+)$ index.php?action=all&page=$1 [L]
+RewriteRule ^all/?$ index.php?action=all&page=1 [L]
+RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?action=$1 [L]

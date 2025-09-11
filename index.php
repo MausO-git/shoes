@@ -8,7 +8,7 @@
             "modele" => "modele.php"
         ];
         
-        if(isset($_GET['action'])){
+        if(isset($_GET['action']) && !empty($_GET['action'])){
             if(array_key_exists($_GET['action'], $tabMenu)){
                 $menu = $tabMenu[$_GET['action']];
                 if($_GET['action'] == "modele"){

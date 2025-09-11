@@ -2,7 +2,9 @@
 <div class="container-lg">
     <h1><?= $donMod['nom'] ?></h1>
     <h2><?= $donMod['nMarque'] ?></h2>
-    <img src="images/<?= $donMod['cover'] ?>" alt="couverture de <?= $donMod['nom'] ?>">
+    <div class="col-6 cover">
+        <img src="images/<?= $donMod['cover'] ?>" alt="couverture de <?= $donMod['nom'] ?>">
+    </div>
     <p><?= $donMod['descr'] ?></p>
     <h2 class="text-warning bg-dark rounded p-1 text-center" style="width: 10rem;"><?= $donMod['prix'] ?> €</h2>
 </div>

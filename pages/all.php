@@ -13,7 +13,7 @@
                     echo "<div class='row-fluid my-1'>".$don['nom']."</div>";
                     echo "<div class='row-fluid my-1'>".$don['marque']."</div>";
                     echo "<div class='row-fluid my-1'>".$don['prix']." €</div>";
-                    echo "<a href='index.php?action=modele&id=".$don['pid']."' class='btn btn-primary mx-5 mt-1 mb-3'>Afficher</a>";
+                    echo "<a href='modele-".$don['pid']."' class='btn btn-primary mx-5 mt-1 mb-3'>Afficher</a>";
                 echo "</div>";
             echo "</div>";
         }
@@ -23,13 +23,13 @@
         <ul class="pagination">
             <?php
                 if($pg>1){
-                    echo "<li class='page-item'><a href='index.php?action=all&page=".($pg - 1)."' class='page-link'>Previous</a></li>";
+                    echo "<li class='page-item'><a href='all-page-".($pg - 1)."' class='page-link'>Previous</a></li>";
                 }
                 for($cpt=1; $cpt <= $nbPage; $cpt++){
-                    echo "<li class='page-item'><a href='index.php?action=all&page=".$cpt."' class='page-link'>".$cpt."</a></li>";
+                    echo "<li class='page-item'><a href='all-page-".$cpt."' class='page-link'>".$cpt."</a></li>";
                 }
                 if($pg!=$nbPage){
-                    echo "<li class='page-item'><a href='index.php?action=all&page=".($pg + 1)."' class='page-link'>Next</a></li>";
+                    echo "<li class='page-item'><a href='all-page-".($pg + 1)."' class='page-link'>Next</a></li>";
                 }
             ?>
         </ul>

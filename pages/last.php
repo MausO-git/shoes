@@ -10,11 +10,11 @@
                     echo "<div class='row-fluid my-1'>".$don['nom']."</div>";
                     echo "<div class='row-fluid my-1'>".$don['marque']."</div>";
                     echo "<div class='row-fluid my-1'>".$don['prix']." €</div>";
-                    echo "<a href='index.php?action=modele&id=".$don['pid']."' class='btn btn-primary mx-5 mt-1 mb-3'>Afficher</a>";
+                    echo "<a href='modele-".$don['pid']."' class='btn btn-primary mx-5 mt-1 mb-3'>Afficher</a>";
                 echo "</div>";
             echo "</div>";
         }
     ?>
     </div>
 </div>
-<a href="index.php?action=all" class='btn btn-success m-4'>Voir tout les modèles</a>
+<a href="all" class='btn btn-success m-4'>Voir tout les modèles</a>
