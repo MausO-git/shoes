@@ -2,10 +2,10 @@
         require "connexion.php";
 
         $tabMenu = [
-            "home" => "home.php",
             "last" => "last.php",
             "all" => "all.php",
-            "modele" => "modele.php"
+            "modele" => "modele.php",
+            "search" => "search.php"
         ];
         
         if(isset($_GET['action']) && !empty($_GET['action'])){
@@ -49,6 +49,13 @@
                     }
 
                     $offset = ($pg - 1) * $limit;
+                    $menu = $tabMenu['all'];
+                }elseif($_GET['action'] == "search"){
+                    if(isset($_GET['search']))
+                    {
+                        $search = strip_tags(htmlspecialchars($_GET['search']));
+                    }
+                    $menu = $tabMenu[$_GET['action']];
                 }else{
                     $menu = $tabMenu[$_GET['action']];
                 }
