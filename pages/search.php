@@ -23,7 +23,7 @@
                 foreach($searchDon as $sDon):
                 
             ?>
-                <div class="card col-md-3 p-2">
+                <div class="card col-md-3 p-2 my-2">
                     <div class="img">
                         <img src="images/<?= $sDon['cover'] ?>" alt="image de <?= $sDon['pnom'] ?>" class="img-fluid">
                     </div>
@@ -36,7 +36,7 @@
             <?php
             endforeach;
             }else{
-                echo "<div class='text-center'>Aucun résultat pour la recherche</div>";
+                echo "<div class='text-center bg-warning-subtle my-2 py-3 fw-semibold border'>Aucun résultat pour la recherche</div>";
             }
         }
     ?>
