@@ -37,6 +37,12 @@
 
                     if(isset($_GET['page']) && is_numeric($_GET['page'])){
                         $pg = htmlspecialchars($_GET['page']);
+                        if($pg>$nbPage){
+                            $pg = $nbPage;
+                        }
+                        if($pg < 1){
+                            $pg = 1;
+                        }
                     }else{
                         //pas eu de pagination
                         $pg = 1;
